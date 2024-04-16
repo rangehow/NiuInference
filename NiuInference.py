@@ -40,7 +40,7 @@ class NiuInference:
         
         
     def _load_model_and_tokenizer(self,device):
-        # BUG 这里也需要改
+        # TODO 这里也需要改,需要根据模型的config文件自动知道应该拿seq2seqLM还是causalLM
         model=AutoModelForSeq2SeqLM.from_pretrained(self.model_dir,torch_dtype=self.dtype,low_cpu_mem_usage=True)
         model.to(device)
         tokenizer=AutoTokenizer.from_pretrained(self.model_dir)
@@ -50,8 +50,6 @@ class NiuInference:
         try:
             device = torch.device(f'cuda:{rank}')
             model, tokenizer = load_model_and_tokenizer(device)
-            # print(tokenizer.special_token)
-            # 这里直接用mydataset没关系，因为这是t5类型，decoder那边会自己给个[EOS]开头吧
             if self.dataset is not None:
                 dataset=self.dataset(data=data,tokenizer=tokenizer)
             else:
